@@ -1,4 +1,4 @@
-# pokemon-tgc-ig
+# pokemon-tgc-angular
 
 This project was generated with [Ignite UI CLI](https://github.com/IgniteUI/igniteui-cli) version 13.2.1.
 

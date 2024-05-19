@@ -1,26 +1,45 @@
-<igx-card>
-  <igx-card-media height="196px"> </igx-card-media>
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
+  @for (deck of decks; track deck) {
+    <igx-card>
+      <igx-card-header>
+        <h3 igxCardHeaderTitle>{{ deck.name }}</h3>
+      </igx-card-header>
 
-  <igx-card-header>
-    <h3 igxCardHeaderTitle>New York</h3>
-    <h5 igxCardHeaderSubtitle>City in New York</h5>
-  </igx-card-header>
+      <igx-card-content>
+        <div class="flex justify-center">
+          <img class="max-h-48" src="assets/pokemon-type-icons/icons/{{ deck.types.name }}.svg" alt="Bug Icon">
+        </div>
+      </igx-card-content>
 
-  <igx-card-content>
-    <p>
-      New York City comprises 5 boroughs sitting where the Hudson River meets
-      the Atlantic Ocean. At its core is Manhattan, a densely populated borough
-      that’s among the world’s major commercial, financial and cultural centers.
-    </p>
-  </igx-card-content>
-
-  <igx-card-actions>
-    <button igxButton igxRipple>Read More</button>
-    <button igxIconButton="flat" igxRipple igxRippleCentered="true">
-      <igx-icon>favorite</igx-icon>
-    </button>
-    <button igxIconButton="flat" igxRipple igxRippleCentered="true">
-      <igx-icon>share</igx-icon>
-    </button>
-  </igx-card-actions>
-</igx-card>
+      <igx-card-actions class="justify-center gap-2">
+        <div class="show-card">
+          <button (click)="alertDelete.open(); clickDeckHome(deck, 'show');" class="btn" igxButton="fab" family="material-symbols" igxRipple>
+            <igx-icon>visibility</igx-icon>
+          </button>
+          <igx-dialog #alertShow
+              title="Notification"
+              message="Your email has been sent successfully!"
+              leftButtonLabel="OK"
+              (leftButtonSelect)="clickDeckHome(deck, 'delete')">
+          </igx-dialog>
+        </div>
+        <div class="edit-card">
+          <button (click)="clickDeckHome(deck, 'edit')" class="btn" igxButton="fab" family="material-symbols" igxRipple>
+            <igx-icon>edit</igx-icon>
+          </button>
+        </div>
+        <div class="delete-card">
+          <button (click)="alertDelete.open()" class="btn" igxButton="fab"  family="material-symbols" igxRipple>
+            <igx-icon>delete</igx-icon>
+          </button>
+          <igx-dialog #alertDelete
+              title="Notification"
+              message="Your email has been sent successfully!"
+              leftButtonLabel="OK"
+              (leftButtonSelect)="clickDeckHome(deck, 'delete')">
+          </igx-dialog>
+        </div>
+      </igx-card-actions>
+    </igx-card>
+  }
+</div>

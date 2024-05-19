@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NavigationService } from '../navigation.service';
 import {
   IgxCardComponent,
   IgxCardHeaderComponent,
@@ -12,7 +13,9 @@ import {
   IgxButtonDirective,
   IgxRippleDirective,
   IgxIconComponent,
+  IgxDialogModule,
 } from 'igniteui-angular';
+import { Deck } from '@models/deck.model';
 
 @Component({
   selector: 'app-home',
@@ -32,9 +35,29 @@ import {
     IgxButtonDirective,
     IgxRippleDirective,
     IgxIconComponent,
+    IgxDialogModule,
   ],
 })
 export class HomeComponent {
-  decks = ['Welcome to Ignite UI for Angular!'];
-  constructor() {}
+  // @TODO vincular com a API
+  decks: Deck[] = [{
+    id: 1,
+    name: 'Meu Primeiro Deck',
+    types: { id: 1, name: 'fire' },
+    cards: [],
+    deleted: false
+  }];
+  constructor(private navigationService: NavigationService) {}
+
+  clickDeckHome(deck: Deck, action: string) {
+    console.log('Botão clicado!');
+    switch (action) {
+      case 'edit':
+        this.navigationService.navigateTo('/edit', [deck.id])
+        break;
+      case 'delete':
+
+        break;
+    }
+  }
 }

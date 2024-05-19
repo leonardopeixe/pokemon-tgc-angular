@@ -25,7 +25,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/pokemon-tgc-ig'),
+      dir: require('path').join(__dirname, './coverage/pokemon-tgc-angular'),
       subdir: '.',
       reporters: [
         { type: 'html' },
