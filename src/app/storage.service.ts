@@ -19,7 +19,7 @@ export class StorageService {
     localStorage.removeItem(key);
   }
 
-  softDelete(key: string, value: any) {
+  softDelete(key: string, value: {id: number}) {
     let itens = JSON.parse(localStorage.getItem(key) as string);
     if(Array.isArray(itens)) {
       for (let index = 0; index < itens.length; index++) {
@@ -29,6 +29,6 @@ export class StorageService {
         }
       }
     }
-    localStorage.setItem(key, itens);
+    this.set(key, itens);
   }
 }
