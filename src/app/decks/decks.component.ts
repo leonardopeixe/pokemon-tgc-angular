@@ -14,14 +14,15 @@ import {
   IgxRippleDirective,
   IgxIconComponent,
   IgxDialogModule,
+  IgxDialogComponent
 } from 'igniteui-angular';
 import { Deck } from '@models/deck.model';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-decks',
   standalone: true,
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  templateUrl: './decks.component.html',
+  styleUrls: ['./decks.component.scss'],
   imports: [
     IgxCardComponent,
     IgxCardHeaderComponent,
@@ -36,9 +37,10 @@ import { Deck } from '@models/deck.model';
     IgxRippleDirective,
     IgxIconComponent,
     IgxDialogModule,
+    IgxDialogComponent
   ],
 })
-export class HomeComponent {
+export class DecksComponent {
   // @TODO vincular com a API
   decks: Deck[] = [{
     id: 1,
@@ -47,16 +49,20 @@ export class HomeComponent {
     cards: [],
     deleted: false
   }];
+
   constructor(private navigationService: NavigationService) {}
 
-  clickDeckHome(deck: Deck, action: string) {
+  clickDecks(deck: Deck, action: string, dialog?: IgxDialogComponent) {
     console.log('Botão clicado!');
     switch (action) {
       case 'edit':
+        dialog?.close()
         this.navigationService.navigateTo('/edit', [deck.id])
         break;
       case 'delete':
-
+        // @TODO vincular com service para controle de localStorage
+        // await deletarStorage()
+        dialog?.close()
         break;
     }
   }
