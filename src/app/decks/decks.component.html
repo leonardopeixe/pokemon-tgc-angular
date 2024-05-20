@@ -1,6 +1,21 @@
 <section id="decks">
+  <button igxButton (click)="showDeleted = !showDeleted">{{ showDeleted ? 'Esconder' : 'Mostrar' }} Arquivados</button>
+  <button igxButton (click)="alertCriarNovo.open()">Editar</button>
+  <igx-dialog #alertCriarNovo [closeOnOutsideSelect]="true">
+    <igx-dialog-title>
+      Criar novo
+    </igx-dialog-title>
+
+    <igx-card-content class="w-72 md:w-96">
+    </igx-card-content>
+
+    <div igxDialogActions>
+        <button igxButton (click)="alertCriarNovo.close()">Fechar</button>
+        <button igxButton (click)="criarNovoDeck(alertCriarNovo)">Salvar</button>
+    </div>
+</igx-dialog>
   <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
-    @for (deck of decks; track deck) {
+    @for (deck of decks | filterDecks: showDeleted; track deck) {
       <igx-card>
         <igx-card-header>
           <h3 igxCardHeaderTitle>{{ deck.name }}</h3>
@@ -19,8 +34,16 @@
             </button>
             <igx-dialog #alertShow [closeOnOutsideSelect]="true">
               <igx-dialog-title>
-                <h3>Detalhar</h3>
+                Cartas
               </igx-dialog-title>
+
+              <igx-card-content class="w-72 md:w-96">
+                <igx-list>
+                    @for (card of deck.cards; track $index) {
+                        <igx-list-item>{{ card.name }}</igx-list-item>
+                    }
+                </igx-list>
+              </igx-card-content>
 
               <div igxDialogActions>
                   <button igxButton (click)="alertShow.close()">Fechar</button>
@@ -37,11 +60,19 @@
             <button (click)="alertDelete.open()" class="btn" igxButton="fab"  family="material-symbols" igxRipple>
               <igx-icon>delete</igx-icon>
             </button>
-            <igx-dialog #alertDelete
-                title="Alerta"
-                message="Seu deck sera deletado!"
-                leftButtonLabel="OK"
-                (leftButtonSelect)="clickDecks(deck, 'delete', alertDelete)">
+            <igx-dialog #alertDelete [closeOnOutsideSelect]="true">
+              <igx-dialog-title>
+                Remover
+              </igx-dialog-title>
+
+              <igx-card-content class="w-72 md:w-96">
+                Seu deck sera arquivado, você pode recuperar ele em outro momento, confirme para continuar.
+              </igx-card-content>
+
+              <div igxDialogActions>
+                  <button igxButton (click)="alertDelete.close()">Fechar</button>
+                  <button igxButton (click)="clickDecks(deck, 'delete', alertDelete)">Remover</button>
+              </div>
             </igx-dialog>
           </div>
         </igx-card-actions>

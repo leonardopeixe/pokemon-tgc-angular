@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { NavigationService } from '../navigation.service';
+import { StorageService } from '../storage.service';
+import { FilterDecksPipe } from '../pipes/filter-decks.pipe';
 import {
   IgxCardComponent,
   IgxCardHeaderComponent,
@@ -14,7 +16,9 @@ import {
   IgxRippleDirective,
   IgxIconComponent,
   IgxDialogModule,
-  IgxDialogComponent
+  IgxDialogComponent,
+  IgxListModule,
+  PositionSettings
 } from 'igniteui-angular';
 import { Deck } from '@models/deck.model';
 
@@ -37,33 +41,63 @@ import { Deck } from '@models/deck.model';
     IgxRippleDirective,
     IgxIconComponent,
     IgxDialogModule,
-    IgxDialogComponent
+    IgxDialogComponent,
+    IgxListModule,
+    FilterDecksPipe
   ],
 })
 export class DecksComponent {
   // @TODO vincular com a API
-  decks: Deck[] = [{
-    id: 1,
-    name: 'Meu Primeiro Deck',
-    types: { id: 1, name: 'fire' },
-    cards: [],
-    deleted: false
-  }];
+  decks: Deck[] = [];
 
-  constructor(private navigationService: NavigationService) {}
+  showDeleted: boolean = false;
+
+  showSettings: PositionSettings = {
+    minSize: { height: 450, width: 450 }
+  };
+
+  searchContact: string = "";
+
+  constructor(private navigationService: NavigationService, private storageService: StorageService) {
+    this.decks = this.storageService.get('decks') as Deck[]
+  }
 
   clickDecks(deck: Deck, action: string, dialog?: IgxDialogComponent) {
     console.log('Botão clicado!');
     switch (action) {
+      case 'show':
+        dialog?.open()
+        break;
       case 'edit':
         dialog?.close()
         this.navigationService.navigateTo('/edit', [deck.id])
         break;
       case 'delete':
-        // @TODO vincular com service para controle de localStorage
-        // await deletarStorage()
+        this.storageService.softDelete('decks', deck.id)
+        this.realoadDecks()
         dialog?.close()
         break;
     }
+  }
+
+  criarNovoDeck(dialog: IgxDialogComponent) {
+    let deck: Deck = {
+      id: 0,
+      name: 'Meu Primeiro Deck',
+      types: { id: 1, name: 'fire' },
+      cards: [
+        {
+          id: "xy1-1",
+          name: 'Venusaur-EX'
+        }
+      ],
+      deleted: false
+    }
+    this.storageService.add('decks', deck)
+    this.realoadDecks()
+    dialog.close()
+  }
+  realoadDecks() {
+    this.decks = this.storageService.get('decks') as Deck[];
   }
 }

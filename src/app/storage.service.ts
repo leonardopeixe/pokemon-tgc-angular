@@ -7,24 +7,31 @@ export class StorageService {
 
   constructor() { }
 
-  set(key: string, value: any) {
+  set(key: string, value: any) : any {
     localStorage.setItem(key, JSON.stringify(value))
   }
 
-  get(key: string) {
-    localStorage.getItem(key)
+  add(key: string, value: any) : any {
+    let itens = JSON.parse(localStorage.getItem(key) as string) ?? [];
+    value.id = itens.length + 1;
+    itens.push(value);
+    localStorage.setItem(key, JSON.stringify(itens))
   }
 
-  delete(key: string) {
+  get(key: string) : any {
+    return JSON.parse(localStorage.getItem(key) as string) ?? null
+  }
+
+  delete(key: string) : any {
     localStorage.removeItem(key);
   }
 
-  softDelete(key: string, value: {id: number}) {
+  softDelete(key: string, id: number) {
     let itens = JSON.parse(localStorage.getItem(key) as string);
     if(Array.isArray(itens)) {
       for (let index = 0; index < itens.length; index++) {
         const element = itens[index];
-        if(element.id == value.id) {
+        if(element.id == id) {
           itens[index].deleted = true
         }
       }
