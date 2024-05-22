@@ -1,3 +1,7 @@
+# Necessário
+`node 20+`
+https://nodejs.org/en/download/package-manager
+
 # Antes de iniciar execute:
 
 `cp .env.example .env`
