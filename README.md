@@ -1,4 +1,4 @@
-## Demo https://pokemon-tgc-angular-pm8bhc8s6-leonardopeixes-projects.vercel.app/
+## Demo https://pokemon-tgc-angular.vercel.app/
 
 # Necessário
 `node 20+`
