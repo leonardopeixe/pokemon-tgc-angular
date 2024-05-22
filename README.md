@@ -1,3 +1,5 @@
+## Demo https://pokemon-tgc-angular-pm8bhc8s6-leonardopeixes-projects.vercel.app/
+
 # Necessário
 `node 20+`
 https://nodejs.org/en/download/package-manager
