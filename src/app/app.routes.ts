@@ -4,13 +4,11 @@ import { UncaughtErrorComponent } from './error-routing/error/uncaught-error.com
 
 // Rotas do app
 import { DecksComponent } from './decks/decks.component';
-import { AboutComponent } from './about/about.component';
 import { EditComponent } from './edit/edit.component';
 
 export const routes: Routes = [
 	{ path: '', redirectTo: '/decks', pathMatch: 'full'},
 	{ path: 'decks', component: DecksComponent, data: { text: 'Visualizar Decks' }},
-  { path: 'about', component: AboutComponent, data: { text: 'Sobre o app' } },
   { path: 'edit/:id', component: EditComponent},
 	{ path: 'error', component: UncaughtErrorComponent },
 	{ path: '**', component: PageNotFoundComponent } // must always be last

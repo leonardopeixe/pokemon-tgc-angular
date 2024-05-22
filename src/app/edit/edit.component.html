@@ -1,1 +1,189 @@
-<p>edit works!</p>
+<section id="deck min-w-full">
+  <igx-toast #toast></igx-toast>
+
+  <div class="text-end">
+    <button igxButton (click)="alertAdicionarCarta.open()">Adicionar</button>
+
+    <button igxButton (click)="saveDeck()">Salvar Deck</button>
+  </div>
+
+  <igx-dialog #alertAdicionarCarta [closeOnOutsideSelect]="true">
+    <igx-dialog-title> Adicionar carta </igx-dialog-title>
+
+    <igx-card-content>
+      <igx-input-group class="autocomplete">
+        <label igxLabel for="card">Escolha a carta</label>
+        <input
+          igxInput
+          name="card"
+          type="text"
+          [igxAutocomplete]="cardPanel"
+          (input)="onInput($event.target)"
+        />
+      </igx-input-group>
+
+      <igx-drop-down #cardPanel (selectionChanging)="onSelection($event)">
+        @for (item of this.filteredCards; track item) {
+        <igx-drop-down-item [value]="item.name">
+          {{ item.number }} - {{ item.name }} - {{ item.supertype }}
+        </igx-drop-down-item>
+        }
+      </igx-drop-down>
+      @if(selectedCard) {
+      <p class="my-2">
+        Você já possui {{ countCardsByName }} cartas com esse nome no baralho
+        (limite de 4)
+      </p>
+      <div class="grid grid-cols-4 gap-2">
+        @for (item of this.cards(); track item) {
+        <igx-card>
+          <igx-card-header>
+            Qtd: {{ showQtd(item.id) }}
+            <h3 igxCardHeaderTitle>{{ item.name }} - {{ item.number }}</h3>
+          </igx-card-header>
+
+          <igx-card-content>
+            <div class="flex justify-center">
+              <img class="max-h-48" [src]="item.images?.large" alt="Bug Icon" />
+            </div>
+          </igx-card-content>
+
+          <igx-card-actions class="justify-center gap-2">
+            <button
+              type="button"
+              class="btn small-button"
+              igxButton="fab"
+              family="material-symbols"
+              igxRipple
+              (click)="addCard(item)"
+            >
+              <igx-icon>add</igx-icon>
+            </button>
+            <button
+              type="button"
+              class="btn small-button"
+              igxButton="fab"
+              family="material-symbols"
+              igxRipple
+              (click)="removeCard(item)"
+            >
+              <igx-icon>remove</igx-icon>
+            </button>
+          </igx-card-actions>
+        </igx-card>
+        }
+      </div>
+      }
+      <div igxDialogActions>
+        <button type="button" igxButton (click)="alertAdicionarCarta.close()">
+          Fechar
+        </button>
+      </div>
+    </igx-card-content>
+  </igx-dialog>
+  @if (typeChartData.length > 0 && supertypeChartData.length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <div class="chart-container">
+        <h4>Quantidade por Tipo</h4>
+        <div class="grid grid-flow-col auto-cols-max gap-2 mt-5 mb-5">
+          @for (item of typeChartData; track $index) {
+          <span
+            class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+            >{{ item.label }}: {{ item.value }}</span
+          >
+          }
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h4>Quantidade por Supertipo</h4>
+        <div class="grid grid-flow-col auto-cols-max gap-2 mt-5 mb-5">
+          @for (item of supertypeChartData; track $index) {
+          <span
+            class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+            >{{ item.label }}: {{ item.value }}</span
+          >
+          }
+        </div>
+      </div>
+    </div>
+  }
+  <div class="grid table">
+    <table class="table-fixed">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th class="text-start">Super Type</th>
+          <th class="text-start">Nome</th>
+          <th>Tipos</th>
+          <th>Qtd</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (card of deck().cards; track $index) {
+        <tr>
+          <td class="text-center">
+            {{ card.number }}
+          </td>
+          <td>
+            {{ card.supertype }}
+          </td>
+          <td>
+            {{ card.name }}
+          </td>
+          <td class="min-w-16">
+            <div class="flex items-center justify-center gap-2">
+              @for (type of card.types; track $index) {
+              <img
+                class="max-h-8 inline"
+                src="assets/pokemon-type-icons/icons/{{
+                  type.toLowerCase()
+                }}.svg"
+                alt="{{ type }} Icon"
+              />
+              }
+            </div>
+          </td>
+          <td class="text-center">
+            {{ card.qtd }}
+          </td>
+          <td class="min-w-4">
+            <div class="flex items-center justify-center gap-2">
+              <button
+                class="btn small-button"
+                igxButton="fab"
+                family="material-symbols"
+                igxRipple
+                (click)="addCard(card)"
+              >
+                <igx-icon>add</igx-icon>
+              </button>
+              <button
+                class="btn small-button"
+                igxButton="fab"
+                family="material-symbols"
+                igxRipple
+                (click)="removeCard(card)"
+              >
+                <igx-icon>remove</igx-icon>
+              </button>
+              <button
+                type="button"
+                class="btn small-button"
+                igxButton="fab"
+                family="material-symbols"
+                igxRipple
+                (click)="goTcgPlayer(card.tcgplayer.url)"
+              >
+                <igx-icon>attach_money</igx-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="text-end">Total de cartas: {{ totalCartas }}</p>
+</section>

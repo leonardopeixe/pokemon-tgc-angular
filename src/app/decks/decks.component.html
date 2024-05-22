@@ -1,82 +1,141 @@
 <section id="decks">
-  <button igxButton (click)="showDeleted = !showDeleted">{{ showDeleted ? 'Esconder' : 'Mostrar' }} Arquivados</button>
-  <button igxButton (click)="alertCriarNovo.open()">Editar</button>
+  <igx-toast #toast></igx-toast>
+
+  <button igxButton (click)="showDeleted = !showDeleted">
+    {{ showDeleted ? "Esconder" : "Mostrar" }} Arquivados
+  </button>
+  <button igxButton (click)="alertCriarNovo.open()">Adicionar</button>
   <igx-dialog #alertCriarNovo [closeOnOutsideSelect]="true">
-    <igx-dialog-title>
-      Criar novo
-    </igx-dialog-title>
+    <igx-dialog-title> Criar novo </igx-dialog-title>
 
     <igx-card-content class="w-72 md:w-96">
+      <form
+        #deckForm="ngForm"
+        (ngSubmit)="criarNovoDeck(deckForm, alertCriarNovo)"
+        novalidate
+      >
+        <div
+          [class]="
+            deckForm.controls['deckName']
+              ? deckForm.controls['deckName'].invalid &&
+                deckForm.controls['deckName'].touched
+                ? 'igx-input-group--invalid'
+                : ''
+              : null
+          "
+        >
+          <igx-input-group>
+            <input
+              igxInput
+              name="deckName"
+              type="text"
+              required
+              [(ngModel)]="deckName"
+            />
+            <label igxLabel for="deckName">Nome do Deck</label>
+          </igx-input-group>
+        </div>
+
+        <div igxDialogActions>
+          <button type="button" igxButton (click)="alertCriarNovo.close()">
+            Fechar
+          </button>
+          <button type="submit">Salvar</button>
+        </div>
+      </form>
     </igx-card-content>
+  </igx-dialog>
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-5">
+    @for (deck of decks() | filterDecks: showDeleted; track deck) {
+    <igx-card>
+      <igx-card-header>
+        <h3 igxCardHeaderTitle>{{ deck.name }}</h3>
+      </igx-card-header>
 
-    <div igxDialogActions>
-        <button igxButton (click)="alertCriarNovo.close()">Fechar</button>
-        <button igxButton (click)="criarNovoDeck(alertCriarNovo)">Salvar</button>
-    </div>
-</igx-dialog>
-  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
-    @for (deck of decks | filterDecks: showDeleted; track deck) {
-      <igx-card>
-        <igx-card-header>
-          <h3 igxCardHeaderTitle>{{ deck.name }}</h3>
-        </igx-card-header>
+      <igx-card-content>
+        <div class="flex justify-center">
+          <img
+            class="max-h-48"
+            src="assets/pokemon-type-icons/icons/{{
+              deck.type.toLowerCase()
+            }}.svg"
+            alt="Bug Icon"
+          />
+        </div>
+      </igx-card-content>
 
-        <igx-card-content>
-          <div class="flex justify-center">
-            <img class="max-h-48" src="assets/pokemon-type-icons/icons/{{ deck.types.name }}.svg" alt="Bug Icon">
-          </div>
-        </igx-card-content>
+      <igx-card-actions class="justify-center gap-2">
+        <div class="show-card">
+          <button
+            (click)="clickDecks(deck, 'show', alertShow)"
+            class="btn"
+            igxButton="fab"
+            family="material-symbols"
+            igxRipple
+          >
+            <igx-icon>visibility</igx-icon>
+          </button>
+          <igx-dialog #alertShow [closeOnOutsideSelect]="true">
+            <igx-dialog-title> Cartas </igx-dialog-title>
 
-        <igx-card-actions class="justify-center gap-2">
-          <div class="show-card">
-            <button (click)="clickDecks(deck, 'show', alertShow)" class="btn" igxButton="fab" family="material-symbols" igxRipple>
-              <igx-icon>visibility</igx-icon>
-            </button>
-            <igx-dialog #alertShow [closeOnOutsideSelect]="true">
-              <igx-dialog-title>
-                Cartas
-              </igx-dialog-title>
+            <igx-card-content class="w-72 md:w-96">
+              <igx-list>
+                @for (card of deck.cards; track $index) {
+                <igx-list-item>{{ card.name }}</igx-list-item>
+                }
+              </igx-list>
+            </igx-card-content>
 
-              <igx-card-content class="w-72 md:w-96">
-                <igx-list>
-                    @for (card of deck.cards; track $index) {
-                        <igx-list-item>{{ card.name }}</igx-list-item>
-                    }
-                </igx-list>
-              </igx-card-content>
-
-              <div igxDialogActions>
-                  <button igxButton (click)="alertShow.close()">Fechar</button>
-                  <button igxButton (click)="clickDecks(deck, 'edit', alertShow)">Editar</button>
-              </div>
+            <div igxDialogActions>
+              <button igxButton (click)="alertShow.close()">Fechar</button>
+              <button igxButton (click)="clickDecks(deck, 'edit', alertShow)">
+                Editar
+              </button>
+            </div>
           </igx-dialog>
-          </div>
-          <div class="edit-card">
-            <button (click)="clickDecks(deck, 'edit')" class="btn" igxButton="fab" family="material-symbols" igxRipple>
-              <igx-icon>edit</igx-icon>
-            </button>
-          </div>
-          <div class="delete-card">
-            <button (click)="alertDelete.open()" class="btn" igxButton="fab"  family="material-symbols" igxRipple>
-              <igx-icon>delete</igx-icon>
-            </button>
-            <igx-dialog #alertDelete [closeOnOutsideSelect]="true">
-              <igx-dialog-title>
+        </div>
+        <div class="edit-card">
+          <button
+            (click)="clickDecks(deck, 'edit')"
+            class="btn"
+            igxButton="fab"
+            family="material-symbols"
+            igxRipple
+          >
+            <igx-icon>edit</igx-icon>
+          </button>
+        </div>
+        <div class="delete-card">
+          <button
+            (click)="alertDelete.open()"
+            class="btn"
+            igxButton="fab"
+            family="material-symbols"
+            igxRipple
+          >
+            <igx-icon>delete</igx-icon>
+          </button>
+          <igx-dialog #alertDelete [closeOnOutsideSelect]="true">
+            <igx-dialog-title> Remover </igx-dialog-title>
+
+            <igx-card-content class="w-72 md:w-96">
+              Seu deck sera arquivado, você pode recuperar ele em outro momento,
+              confirme para continuar.
+            </igx-card-content>
+
+            <div igxDialogActions>
+              <button igxButton (click)="alertDelete.close()">Fechar</button>
+              <button
+                igxButton
+                (click)="clickDecks(deck, 'delete', alertDelete)"
+              >
                 Remover
-              </igx-dialog-title>
-
-              <igx-card-content class="w-72 md:w-96">
-                Seu deck sera arquivado, você pode recuperar ele em outro momento, confirme para continuar.
-              </igx-card-content>
-
-              <div igxDialogActions>
-                  <button igxButton (click)="alertDelete.close()">Fechar</button>
-                  <button igxButton (click)="clickDecks(deck, 'delete', alertDelete)">Remover</button>
-              </div>
-            </igx-dialog>
-          </div>
-        </igx-card-actions>
-      </igx-card>
+              </button>
+            </div>
+          </igx-dialog>
+        </div>
+      </igx-card-actions>
+    </igx-card>
     }
   </div>
 </section>

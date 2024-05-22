@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
-import { NavigationService } from '../navigation.service';
-import { StorageService } from '../storage.service';
-import { FilterDecksPipe } from '../pipes/filter-decks.pipe';
+import { Component, Signal, ViewChild } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
+import { useAnimation } from '@angular/animations';
 import {
   IgxCardComponent,
   IgxCardHeaderComponent,
@@ -18,9 +17,20 @@ import {
   IgxDialogModule,
   IgxDialogComponent,
   IgxListModule,
-  PositionSettings
+  IgxInputGroupComponent,
+  IgxLabelDirective,
+  IgxInputDirective,
+  IgxToastComponent,
+  IgxToastModule,
+  PositionSettings,
+  HorizontalAlignment,
+  VerticalAlignment,
 } from 'igniteui-angular';
-import { Deck } from '@models/deck.model';
+import { slideInTop, slideOutBottom } from 'igniteui-angular/animations';
+import { NavigationService } from '../services/navigation.service';
+import { StorageService } from '../services/storage.service';
+import { FilterDecksPipe } from '../pipes/filter-decks.pipe';
+import { Deck } from '../models/deck.model';
 
 @Component({
   selector: 'app-decks',
@@ -43,61 +53,89 @@ import { Deck } from '@models/deck.model';
     IgxDialogModule,
     IgxDialogComponent,
     IgxListModule,
-    FilterDecksPipe
+    IgxInputGroupComponent,
+    IgxLabelDirective,
+    IgxInputDirective,
+    IgxToastComponent,
+    IgxToastModule,
+    FilterDecksPipe,
+    FormsModule,
   ],
 })
 export class DecksComponent {
-  // @TODO vincular com a API
-  decks: Deck[] = [];
+  decks: Signal<Deck[]>;
+
+  deckName: string = '';
 
   showDeleted: boolean = false;
 
-  showSettings: PositionSettings = {
-    minSize: { height: 450, width: 450 }
+  searchContact: string = '';
+
+  @ViewChild(IgxToastComponent, { static: true }) toast!: IgxToastComponent;
+
+  public newPositionSettings: PositionSettings = {
+    openAnimation: useAnimation(slideInTop, {
+      params: { duration: '1000ms', fromPosition: 'translateY(100%)' },
+    }),
+    closeAnimation: useAnimation(slideOutBottom, {
+      params: { duration: '1000ms', fromPosition: 'translateY(0)' },
+    }),
+    horizontalDirection: HorizontalAlignment.Center,
+    verticalDirection: VerticalAlignment.Top,
+    horizontalStartPoint: HorizontalAlignment.Left,
+    verticalStartPoint: VerticalAlignment.Bottom,
   };
 
-  searchContact: string = "";
-
-  constructor(private navigationService: NavigationService, private storageService: StorageService) {
-    this.decks = this.storageService.get('decks') as Deck[]
+  constructor(
+    private navigationService: NavigationService,
+    private storageService: StorageService
+  ) {
+    this.decks = this.storageService.getSignal('decks');
   }
 
   clickDecks(deck: Deck, action: string, dialog?: IgxDialogComponent) {
-    console.log('Botão clicado!');
     switch (action) {
       case 'show':
-        dialog?.open()
+        dialog?.open();
         break;
       case 'edit':
-        dialog?.close()
-        this.navigationService.navigateTo('/edit', [deck.id])
+        dialog?.close();
+        this.navigationService.navigateTo('/edit', [deck.id]);
         break;
       case 'delete':
-        this.storageService.softDelete('decks', deck.id)
-        this.realoadDecks()
-        dialog?.close()
+        this.storageService.softDelete('decks', deck.id);
+        this.showToast('Deck deletado com sucesso');
         break;
     }
   }
 
-  criarNovoDeck(dialog: IgxDialogComponent) {
+  criarNovoDeck(form: NgForm, dialog: IgxDialogComponent) {
+    if (form.invalid) {
+      Object.keys(form.controls).forEach((controlName) => {
+        const control = form.controls[controlName];
+        control.markAsTouched();
+        control.markAsDirty();
+      });
+      this.showToast('Preencha corretamente os campos');
+      return;
+    }
     let deck: Deck = {
       id: 0,
-      name: 'Meu Primeiro Deck',
-      types: { id: 1, name: 'fire' },
-      cards: [
-        {
-          id: "xy1-1",
-          name: 'Venusaur-EX'
-        }
-      ],
-      deleted: false
-    }
-    this.storageService.add('decks', deck)
-    this.realoadDecks()
-    dialog.close()
+      name: this.deckName,
+      type: 'normal',
+      cards: [],
+      deleted: false,
+    };
+    this.storageService.add('decks', deck);
+    this.deckName = '';
+    dialog.close();
   }
-  realoadDecks() {
-    this.decks = this.storageService.get('decks') as Deck[];
+
+  showToast(message: string) {
+    this.toast.textMessage = message;
+    this.toast.positionSettings = this.newPositionSettings;
+    this.toast.autoHide = true;
+    this.toast.displayTime = 2000; // 3 seconds
+    this.toast.open();
   }
 }

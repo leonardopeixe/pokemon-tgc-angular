@@ -1,13 +1,16 @@
 <div class="outer-wrapper" igxLayout>
   <igx-nav-drawer #nav id="project-menu" [isOpen]="true" [enableGestures]="true" width="280px">
     <ng-template igxDrawer>
-      <span igxDrawerItem [isHeader]="true">Views</span>
+      <span igxDrawerItem [isHeader]="true">Páginas</span>
       <span *ngFor="let route of topNavLinks" igxDrawerItem igxRipple routerLinkActive="igx-nav-drawer__item--active" [routerLink]="route.path">{{route.name}}</span>
+      <div id="footer-nav">
+        Desenvolvido por <a href="https://www.linkedin.com/in/dev-leonardo-peixe/" target="_blank">Leonardo Peixe</a>
+      </div>
     </ng-template>
   </igx-nav-drawer>
   <div igxFlex igxLayout igxLayoutDir="columns">
     <igx-navbar title="pokemon-tgc-angular" actionButtonIcon="menu" (action)="nav.toggle()"></igx-navbar>
-    <div class="content mt-5" igxFlex>
+    <div class="mx-5 my-5">
       <router-outlet></router-outlet>
      </div>
   </div>

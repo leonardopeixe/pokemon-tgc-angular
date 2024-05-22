@@ -24,6 +24,7 @@
     "fs": "^0.0.1-security",
     "hammerjs": "~2.0.8",
     "igniteui-angular": "~17.2.0",
+    "igniteui-angular-charts": "^17.3.0",
     "minireset.css": "~0.0.7",
     "rxjs": "~7.8.0",
     "tslib": "~2.3.0",
