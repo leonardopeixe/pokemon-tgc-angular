@@ -59,7 +59,7 @@
             src="assets/pokemon-type-icons/icons/{{
               deck.type.toLowerCase()
             }}.svg"
-            alt="Bug Icon"
+            alt="{{ deck.type.toLowerCase() }} Icon"
           />
         </div>
       </igx-card-content>
@@ -81,7 +81,7 @@
             <igx-card-content class="w-72 md:w-96">
               <igx-list>
                 @for (card of deck.cards; track $index) {
-                <igx-list-item>{{ card.name }}</igx-list-item>
+                  <igx-list-item>{{ card.qtd }}x - {{ card.name }}</igx-list-item>
                 }
               </igx-list>
             </igx-card-content>
